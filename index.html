@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Collection</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: #000000;
+            color: #fff;
+            min-height: 100vh;
+            padding: 2rem;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 50% 50%, rgba(40, 40, 40, 0.1) 0%, rgba(0,0,0,1) 70%);
+            pointer-events: none;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 15px rgba(0, 255, 136, 0.5);
+            position: relative;
+            padding-bottom: 1rem;
+        }
+
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #00ff88, transparent);
+            box-shadow: 0 0 10px #00ff88;
+        }
+
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            padding: 1rem;
+        }
+
+        .game-card {
+            background: rgba(25, 25, 25, 0.95);
+            border-radius: 15px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(0, 255, 136, 0.1);
+        }
+
+        .game-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 30px rgba(0, 255, 136, 0.2);
+        }
+
+        .game-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(0, 255, 136, 0.1), transparent);
+            transform: rotate(45deg);
+            transition: all 0.5s ease;
+            opacity: 0;
+        }
+
+        .game-card:hover::before {
+            opacity: 1;
+            top: -20%;
+            left: -20%;
+        }
+
+        .game-image {
+            width: 100%;
+            height: 200px;
+            border-radius: 10px;
+            object-fit: cover;
+            margin-bottom: 1rem;
+            transition: transform 0.3s ease;
+            position: relative;
+            z-index: 1;
+        }
+
+        .game-card:hover .game-image {
+            transform: scale(1.03);
+        }
+
+        .game-title {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(255,255,255,0.2);
+        }
+
+        .game-genre {
+            color: #888;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .game-platform {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            background: rgba(0, 255, 136, 0.1);
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin-bottom: 0.5rem;
+            color: #00ff88;
+            border: 1px solid rgba(0, 255, 136, 0.2);
+        }
+
+        .game-size {
+            color: #aaa;
+            font-size: 0.9rem;
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .game-size span {
+            color: #00ff88;
+            font-weight: bold;
+            text-shadow: 0 0 8px rgba(0, 255, 136, 0.3);
+        }
+
+        .file-icon {
+            width: 18px;
+            height: 18px;
+            filter: invert(0.8) sepia(1) saturate(5) hue-rotate(85deg);
+        }
+
+        .game-completion {
+            height: 5px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 3px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .completion-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #00ff88, #00b4d8);
+            transition: width 0.5s ease;
+            box-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
+        }
+
+        /* Modal Styles */
+        .game-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+            animation: modalFade 0.3s ease;
+        }
+
+        .modal-content {
+            position: relative;
+            background: rgba(25, 25, 25, 0.95);
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            border-radius: 15px;
+            border: 1px solid rgba(0, 255, 136, 0.2);
+            box-shadow: 0 0 50px rgba(0, 255, 136, 0.1);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            color: #00ff88;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .modal-close:hover {
+            transform: rotate(90deg);
+        }
+
+        .modal-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 2rem;
+        }
+
+        .modal-image {
+            width: 100%;
+            border-radius: 10px;
+            height: 300px;
+            object-fit: cover;
+        }
+
+        .modal-details h2 {
+            color: #00ff88;
+            margin-bottom: 1rem;
+        }
+
+        .detail-item {
+            margin-bottom: 1rem;
+        }
+
+        .detail-label {
+            color: #888;
+            font-size: 0.9rem;
+        }
+
+        .detail-value {
+            color: #fff;
+            font-size: 1rem;
+        }
+
+        .game-description {
+            line-height: 1.6;
+            margin-top: 1rem;
+            color: #ccc;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes modalFade {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .game-card {
+            animation: fadeIn 0.6s ease forwards;
+            opacity: 0;
+        }
+
+        .game-card:nth-child(1) { animation-delay: 0.1s; }
+        .game-card:nth-child(2) { animation-delay: 0.2s; }
+        .game-card:nth-child(3) { animation-delay: 0.3s; }
+        .game-card:nth-child(4) { animation-delay: 0.4s; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎮 My Game Collection</h1>
+        
+        <div class="game-grid">
+            <!-- Game 1 -->
+            <div class="game-card" 
+                 data-release="03 Mar 2017" 
+                 data-developer="Nintendo" 
+                 data-description="Petualangan epik di dunia terbuka Hyrule. Jelajahi alam liar, pecahkan teka-teki, dan hadapi Ganon dalam pertempuran akhir yang spektakuler.">
+                <img src="https://picsum.photos/300/200?random=1" class="game-image" alt="Game Cover">
+                <h3 class="game-title">The Legend of Zelda: Breath of the Wild</h3>
+                <p class="game-genre">Action-Adventure</p>
+                <span class="game-platform">Nintendo Switch</span>
+                <div class="game-size">
+                    <svg class="file-icon" viewBox="0 0 24 24">
+                        <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
+                    </svg>
+                    <span>13.4 GB</span>
+                </div>
+                <div class="game-completion">
+                    <div class="completion-bar" style="width: 85%"></div>
+                </div>
+            </div>
+
+            <!-- Game 2 -->
+            <div class="game-card" 
+                 data-release="10 Dec 2020" 
+                 data-developer="CD Projekt Red" 
+                 data-description="Masa depan dystopian di Night City. Mainkan sebagai V dan jelajahi kota megapolitan sambil menyelesaikan misi berbahaya dan meningkatkan karakter Anda.">
+                <img src="https://picsum.photos/300/200?random=2" class="game-image" alt="Game Cover">
+                <h3 class="game-title">Cyberpunk 2077</h3>
+                <p class="game-genre">RPG</p>
+                <span class="game-platform">PC</span>
+                <div class="game-size">
+                    <svg class="file-icon" viewBox="0 0 24 24">
+                        <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
+                    </svg>
+                    <span>68.4 GB</span>
+                </div>
+                <div class="game-completion">
+                    <div class="completion-bar" style="width: 45%"></div>
+                </div>
+            </div>
+
+            <!-- Game 3 -->
+            <div class="game-card" 
+                 data-release="09 Nov 2022" 
+                 data-developer="Santa Monica Studio" 
+                 data-description="Kratos dan Atreus melanjutkan perjalanan mereka di dunia Norse. Hadapi dewa-dewa baru dan ungkap misteri Ragnarök yang akan datang.">
+                <img src="https://picsum.photos/300/200?random=3" class="game-image" alt="Game Cover">
+                <h3 class="game-title">God of War: Ragnarök</h3>
+                <p class="game-genre">Action-Adventure</p>
+                <span class="game-platform">PlayStation 5</span>
+                <div class="game-size">
+                    <svg class="file-icon" viewBox="0 0 24 24">
+                        <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
+                    </svg>
+                    <span>84.2 GB</span>
+                </div>
+                <div class="game-completion">
+                    <div class="completion-bar" style="width: 100%"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Modal -->
+    <div class="game-modal">
+        <div class="modal-content">
+            <button class="modal-close">&times;</button>
+            <div class="modal-grid">
+                <img src="" class="modal-image" alt="Game Cover">
+                <div class="modal-details">
+                    <h2 class="game-title"></h2>
+                    <div class="detail-item">
+                        <div class="detail-label">Genre</div>
+                        <div class="detail-value game-genre"></div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Platform</div>
+                        <div class="detail-value game-platform"></div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Ukuran File</div>
+                        <div class="detail-value game-size"></div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Progress</div>
+                        <div class="game-completion">
+                            <div class="completion-bar"></div>
+                        </div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Rilis</div>
+                        <div class="detail-value game-release"></div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Developer</div>
+                        <div class="detail-value game-developer"></div>
+                    </div>
+                    <p class="game-description"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const gameCards = document.querySelectorAll('.game-card');
+        const modal = document.querySelector('.game-modal');
+        const closeBtn = document.querySelector('.modal-close');
+
+        gameCards.forEach(card => {
+            card.addEventListener('click', () => {
+                const gameData = {
+                    image: card.querySelector('.game-image').src,
+                    title: card.querySelector('.game-title').textContent,
+                    genre: card.querySelector('.game-genre').textContent,
+                    platform: card.querySelector('.game-platform').textContent,
+                    size: card.querySelector('.game-size span').textContent,
+                    progress: card.querySelector('.completion-bar').style.width,
+                    release: card.dataset.release,
+                    developer: card.dataset.developer,
+                    description: card.dataset.description
+                };
+
+                modal.querySelector('.modal-image').src = gameData.image;
+                modal.querySelector('.modal-details h2').textContent = gameData.title;
+                modal.querySelector('.modal-details .game-genre').textContent = gameData.genre;
+                modal.querySelector('.modal-details .game-platform').textContent = gameData.platform;
+                modal.querySelector('.modal-details .game-size').textContent = gameData.size;
+                modal.querySelector('.modal-details .completion-bar').style.width = gameData.progress;
+                modal.querySelector('.game-release').textContent = gameData.release;
+                modal.querySelector('.game-developer').textContent = gameData.developer;
+                modal.querySelector('.game-description').textContent = gameData.description;
+
+                modal.style.display = 'block';
+            });
+        });
+
+        closeBtn.addEventListener('click', () => {
+            modal.style.display = 'none';
+        });
+
+        window.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
