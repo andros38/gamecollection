@@ -2,9 +2,14 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
     <title>Game Collection</title>
     <style>
+        :root {
+            --neon-color: #00ff88;
+            --bg-color: #000;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -13,10 +18,10 @@
         }
 
         body {
-            background: #000000;
+            background: var(--bg-color);
             color: #fff;
             min-height: 100vh;
-            padding: 2rem;
+            padding: 1rem;
             position: relative;
             overflow-x: hidden;
         }
@@ -41,8 +46,8 @@
 
         h1 {
             text-align: center;
-            font-size: 2.5rem;
-            margin-bottom: 2rem;
+            font-size: clamp(1.75rem, 4vw, 2.5rem);
+            margin: 1.5rem 0;
             text-transform: uppercase;
             letter-spacing: 2px;
             text-shadow: 0 0 15px rgba(0, 255, 136, 0.5);
@@ -58,21 +63,21 @@
             transform: translateX(-50%);
             width: 100px;
             height: 3px;
-            background: linear-gradient(90deg, transparent, #00ff88, transparent);
-            box-shadow: 0 0 10px #00ff88;
+            background: linear-gradient(90deg, transparent, var(--neon-color), transparent);
+            box-shadow: 0 0 10px var(--neon-color);
         }
 
         .game-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 2rem;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
             padding: 1rem;
         }
 
         .game-card {
             background: rgba(25, 25, 25, 0.95);
             border-radius: 15px;
-            padding: 1.5rem;
+            padding: 1.2rem;
             transition: all 0.3s ease;
             cursor: pointer;
             position: relative;
@@ -106,7 +111,7 @@
 
         .game-image {
             width: 100%;
-            height: 200px;
+            height: 180px;
             border-radius: 10px;
             object-fit: cover;
             margin-bottom: 1rem;
@@ -120,7 +125,7 @@
         }
 
         .game-title {
-            font-size: 1.2rem;
+            font-size: clamp(1rem, 1.5vw, 1.2rem);
             margin-bottom: 0.5rem;
             color: #fff;
             text-shadow: 0 0 10px rgba(255,255,255,0.2);
@@ -128,7 +133,7 @@
 
         .game-genre {
             color: #888;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             margin-bottom: 0.5rem;
         }
 
@@ -137,15 +142,15 @@
             padding: 0.3rem 0.8rem;
             background: rgba(0, 255, 136, 0.1);
             border-radius: 20px;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             margin-bottom: 0.5rem;
-            color: #00ff88;
+            color: var(--neon-color);
             border: 1px solid rgba(0, 255, 136, 0.2);
         }
 
         .game-size {
             color: #aaa;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             margin-bottom: 0.8rem;
             display: flex;
             align-items: center;
@@ -153,14 +158,14 @@
         }
 
         .game-size span {
-            color: #00ff88;
+            color: var(--neon-color);
             font-weight: bold;
             text-shadow: 0 0 8px rgba(0, 255, 136, 0.3);
         }
 
         .file-icon {
-            width: 18px;
-            height: 18px;
+            width: 16px;
+            height: 16px;
             filter: invert(0.8) sepia(1) saturate(5) hue-rotate(85deg);
         }
 
@@ -174,7 +179,7 @@
 
         .completion-bar {
             height: 100%;
-            background: linear-gradient(90deg, #00ff88, #00b4d8);
+            background: linear-gradient(90deg, var(--neon-color), #00b4d8);
             transition: width 0.5s ease;
             box-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
         }
@@ -187,18 +192,19 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.8);
+            background: rgba(0,0,0,0.9);
             z-index: 1000;
             backdrop-filter: blur(5px);
             animation: modalFade 0.3s ease;
+            overflow-y: auto;
         }
 
         .modal-content {
             position: relative;
-            background: rgba(25, 25, 25, 0.95);
+            background: rgba(25, 25, 25, 0.98);
             max-width: 800px;
             margin: 2rem auto;
-            padding: 2rem;
+            padding: 1.5rem;
             border-radius: 15px;
             border: 1px solid rgba(0, 255, 136, 0.2);
             box-shadow: 0 0 50px rgba(0, 255, 136, 0.1);
@@ -210,7 +216,7 @@
             right: 1rem;
             background: none;
             border: none;
-            color: #00ff88;
+            color: var(--neon-color);
             font-size: 1.5rem;
             cursor: pointer;
             transition: transform 0.3s ease;
@@ -222,20 +228,22 @@
 
         .modal-grid {
             display: grid;
-            grid-template-columns: 1fr 2fr;
-            gap: 2rem;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
         }
 
         .modal-image {
             width: 100%;
             border-radius: 10px;
-            height: 300px;
+            height: auto;
+            max-height: 300px;
             object-fit: cover;
         }
 
         .modal-details h2 {
-            color: #00ff88;
+            color: var(--neon-color);
             margin-bottom: 1rem;
+            font-size: 1.5rem;
         }
 
         .detail-item {
@@ -244,20 +252,23 @@
 
         .detail-label {
             color: #888;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
         }
 
         .detail-value {
             color: #fff;
-            font-size: 1rem;
+            font-size: 0.95rem;
+            margin-top: 0.3rem;
         }
 
         .game-description {
             line-height: 1.6;
             margin-top: 1rem;
             color: #ccc;
+            font-size: 0.9rem;
         }
 
+        /* Animations */
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
@@ -273,10 +284,59 @@
             opacity: 0;
         }
 
-        .game-card:nth-child(1) { animation-delay: 0.1s; }
-        .game-card:nth-child(2) { animation-delay: 0.2s; }
-        .game-card:nth-child(3) { animation-delay: 0.3s; }
-        .game-card:nth-child(4) { animation-delay: 0.4s; }
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .game-grid {
+                gap: 1rem;
+                padding: 0;
+            }
+
+            .game-card {
+                padding: 1rem;
+            }
+
+            .modal-content {
+                margin: 1rem;
+                padding: 1.2rem;
+            }
+
+            .modal-details h2 {
+                font-size: 1.3rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 0.5rem;
+            }
+
+            h1 {
+                margin: 1rem 0;
+                padding-bottom: 0.5rem;
+            }
+
+            .game-image {
+                height: 150px;
+            }
+
+            .modal-image {
+                max-height: 200px;
+            }
+
+            .detail-value {
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .game-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .game-title {
+                font-size: 1rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -391,32 +451,36 @@
         const modal = document.querySelector('.game-modal');
         const closeBtn = document.querySelector('.modal-close');
 
+        // Modal Controller
+        function showModal(card) {
+            const gameData = {
+                image: card.querySelector('.game-image').src,
+                title: card.querySelector('.game-title').textContent,
+                genre: card.querySelector('.game-genre').textContent,
+                platform: card.querySelector('.game-platform').textContent,
+                size: card.querySelector('.game-size span').textContent,
+                progress: card.querySelector('.completion-bar').style.width,
+                release: card.dataset.release,
+                developer: card.dataset.developer,
+                description: card.dataset.description
+            };
+
+            modal.querySelector('.modal-image').src = gameData.image;
+            modal.querySelector('.modal-details h2').textContent = gameData.title;
+            modal.querySelector('.modal-details .game-genre').textContent = gameData.genre;
+            modal.querySelector('.modal-details .game-platform').textContent = gameData.platform;
+            modal.querySelector('.modal-details .game-size').textContent = gameData.size;
+            modal.querySelector('.modal-details .completion-bar').style.width = gameData.progress;
+            modal.querySelector('.game-release').textContent = gameData.release;
+            modal.querySelector('.game-developer').textContent = gameData.developer;
+            modal.querySelector('.game-description').textContent = gameData.description;
+
+            modal.style.display = 'block';
+        }
+
+        // Event Listeners
         gameCards.forEach(card => {
-            card.addEventListener('click', () => {
-                const gameData = {
-                    image: card.querySelector('.game-image').src,
-                    title: card.querySelector('.game-title').textContent,
-                    genre: card.querySelector('.game-genre').textContent,
-                    platform: card.querySelector('.game-platform').textContent,
-                    size: card.querySelector('.game-size span').textContent,
-                    progress: card.querySelector('.completion-bar').style.width,
-                    release: card.dataset.release,
-                    developer: card.dataset.developer,
-                    description: card.dataset.description
-                };
-
-                modal.querySelector('.modal-image').src = gameData.image;
-                modal.querySelector('.modal-details h2').textContent = gameData.title;
-                modal.querySelector('.modal-details .game-genre').textContent = gameData.genre;
-                modal.querySelector('.modal-details .game-platform').textContent = gameData.platform;
-                modal.querySelector('.modal-details .game-size').textContent = gameData.size;
-                modal.querySelector('.modal-details .completion-bar').style.width = gameData.progress;
-                modal.querySelector('.game-release').textContent = gameData.release;
-                modal.querySelector('.game-developer').textContent = gameData.developer;
-                modal.querySelector('.game-description').textContent = gameData.description;
-
-                modal.style.display = 'block';
-            });
+            card.addEventListener('click', () => showModal(card));
         });
 
         closeBtn.addEventListener('click', () => {
@@ -428,6 +492,13 @@
                 modal.style.display = 'none';
             }
         });
+
+        // Mobile Viewport Height Fix
+        function setVH() {
+            document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
+        }
+        setVH();
+        window.addEventListener('resize', setVH);
     </script>
 </body>
 </html>
